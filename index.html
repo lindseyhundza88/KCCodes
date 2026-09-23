@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Codes – Knowledge Check</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #e8edf2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #333;
+    padding: 20px 16px 40px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: #1e4da1;
+    border-radius: 4px 4px 0 0;
+    padding: 12px 18px;
+    max-width: 860px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .page-header h1 { font-size: 14px; font-weight: 700; color: #fff; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .count-badge { font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.18); color: #fff; padding: 3px 10px; border-radius: 10px; }
+
+  .page-subheader {
+    background: #c8d8e8; border: 1px solid #a8b8cc;
+    border-top: none; border-radius: 0 0 4px 4px;
+    padding: 9px 18px; max-width: 860px;
+    font-size: 12px; color: #333; line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  /* ── Progress ── */
+  .progress-wrap { max-width: 860px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .progress-bg { flex: 1; height: 6px; background: #ccc; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #1e4da1; border-radius: 3px; transition: width 0.4s ease; }
+  .progress-label { font-size: 11px; color: #777; white-space: nowrap; }
+
+  /* ── Question card ── */
+  .q-card {
+    background: #fff; border: 1px solid #bbb;
+    border-radius: 4px; max-width: 860px;
+    margin-bottom: 14px; overflow: hidden;
+  }
+
+  .q-topbar {
+    background: #1e4da1; color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 6px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .q-tag {
+    font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.18);
+    padding: 2px 8px; border-radius: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .q-body { padding: 14px 18px 6px; }
+
+  /* Scenario box */
+  .scenario-box {
+    background: #f7f7f7; border: 1px solid #ddd;
+    border-radius: 3px; padding: 10px 14px;
+    margin-bottom: 14px; font-size: 12px;
+    color: #333; line-height: 1.55;
+  }
+  .scenario-box .scenario-label {
+    font-size: 10px; font-weight: 700;
+    color: #1e4da1; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+
+  .q-stem { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 12px; line-height: 1.4; }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+
+  .option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 12px; border: 1px solid #ccc;
+    border-radius: 3px; background: #f7f7f7;
+    cursor: pointer; transition: background 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .option:hover { background: #eef3fa; border-color: #90a8cc; }
+  .option.selected-correct { background: #e8f5e8; border-color: #60a860; }
+  .option.selected-wrong   { background: #fde8e8; border-color: #e05050; }
+  .option.reveal-correct   { background: #e8f5e8; border-color: #60a860; }
+  .option.dimmed           { opacity: 0.4; pointer-events: none; }
+
+  .option-letter {
+    flex-shrink: 0; width: 22px; height: 22px;
+    border-radius: 50%; background: #ddd; color: #555;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  .selected-correct .option-letter { background: #60a860; color: #fff; }
+  .selected-wrong   .option-letter { background: #e05050; color: #fff; }
+  .reveal-correct   .option-letter { background: #60a860; color: #fff; }
+
+  .option-body { flex: 1; }
+  .option-code {
+    font-family: 'Courier New', monospace;
+    font-size: 11px; font-weight: 700; color: #1e4da1;
+    background: #e8edf5; border: 1px solid #b0c4e8;
+    border-radius: 2px; padding: 1px 6px;
+    display: inline-block; margin-bottom: 3px;
+  }
+  .selected-correct .option-code { background: #d0ecd0; border-color: #70b870; color: #1a5a1a; }
+  .selected-wrong   .option-code { background: #fde0e0; border-color: #e08080; color: #8a2020; }
+  .reveal-correct   .option-code { background: #d0ecd0; border-color: #70b870; color: #1a5a1a; }
+  .option-desc { font-size: 11px; color: #555; line-height: 1.4; }
+
+  /* Feedback */
+  .feedback {
+    display: none; margin: 10px 0 4px;
+    padding: 9px 12px; border-radius: 3px;
+    font-size: 12px; line-height: 1.5;
+  }
+  .feedback.correct { background: #e8f5e8; border: 1px solid #80c080; color: #1a4a1a; }
+  .feedback.wrong   { background: #fde8e8; border: 1px solid #e08080; color: #6a1a1a; }
+
+  /* Footer */
+  .q-footer {
+    background: #f0f0f0; border-top: 1px solid #ddd;
+    padding: 8px 14px; display: flex;
+    align-items: center; justify-content: space-between;
+  }
+  .answered-badge {
+    display: none; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .answered-badge.correct { background: #e8f5e8; color: #1a5a1a; border: 1px solid #80c080; }
+  .answered-badge.wrong   { background: #fde8e8; color: #8a2020; border: 1px solid #e08080; }
+
+  .btn-submit {
+    font-size: 12px; font-weight: 600;
+    padding: 5px 18px; border-radius: 3px;
+    border: 1px solid #1a3d80; background: #1e4da1;
+    color: #fff; cursor: pointer;
+  }
+  .btn-submit:hover { background: #1a3d80; }
+  .btn-submit:disabled { background: #aaa; border-color: #aaa; cursor: default; }
+
+  /* ── Score card ── */
+  .score-card {
+    display: none; background: #fff;
+    border: 1px solid #bbb; border-radius: 4px;
+    max-width: 860px; overflow: hidden;
+  }
+  .score-topbar { background: #1e4da1; color: #fff; font-size: 13px; font-weight: 700; padding: 9px 14px; }
+  .score-body { padding: 20px 18px; display: flex; align-items: center; gap: 28px; }
+  .score-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 4px solid #1e4da1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .score-num { font-size: 26px; font-weight: 700; color: #1e4da1; line-height: 1; }
+  .score-denom { font-size: 11px; color: #888; }
+  .score-text h3 { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 6px; }
+  .score-text p { font-size: 12px; color: #555; line-height: 1.5; }
+  .score-footer { background: #f0f0f0; border-top: 1px solid #ddd; padding: 8px 14px; display: flex; justify-content: flex-end; }
+  .btn-retry { font-size: 12px; font-weight: 600; padding: 5px 16px; border-radius: 3px; border: 1px solid #bbb; background: #e8e8e8; color: #333; cursor: pointer; }
+  .btn-retry:hover { background: #ddd; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Activity Codes — Knowledge Check</h1>
+  <div class="header-right">
+    <span class="count-badge" id="progressText">0 of 8 answered</span>
+  </div>
+</div>
+<div class="page-subheader">
+  Read each scenario and select the SLS Paralegal activity code that best matches the work described. Use what you learned from the reference table to guide your answers.
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-label" id="progressLabel">0 of 8 answered</span>
+</div>
+
+<!-- Q1 -->
+<div class="q-card" id="q1">
+  <div class="q-topbar">Question 1 of 8 <span class="q-tag">Case Work</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      You just received a new matter referral. You review the intake form, set the SOL date, assign the Injury Tier, and input the client's basic information into Litify. You also check that the intake record is complete before moving on.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q1','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_017_Data Clean Up</div>
+          <div class="option-desc">Update of information in Litify or Spreadsheets.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q1','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_001_Initial Case Review</div>
+          <div class="option-desc">Review of intake or new matter information. Includes SOL Setting, Injury Tier, and inputting initial information in Litify.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q1','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_005_CQ Review</div>
+          <div class="option-desc">Review of submitted Questionnaire and validation of client info.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q1','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_003_Case Audit</div>
+          <div class="option-desc">General review of matter information to identify missing documents or validate injuries.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q1-badge"></span>
+    <button class="btn-submit" id="q1-btn" onclick="submit('q1','b','Initial Case Review covers everything described here — setting the SOL, assigning the Injury Tier, inputting data into Litify, and reviewing the completeness of the intake record. Data Clean Up would apply to updating existing records, not first-time intake.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="q-card" id="q2">
+  <div class="q-topbar">Question 2 of 8 <span class="q-tag">Medical</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      A client's medical records have arrived. You spend 90 minutes reviewing them, updating the Medical History tab in Litify, and drafting a medical record summary to document the client's injuries and exposure.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q2','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_006_Medical Record Request/Follow Up</div>
+          <div class="option-desc">Submission of MR record requests via Litify and outreach to gather information.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q2','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_003_Case Audit</div>
+          <div class="option-desc">General review of matter information to identify missing information or validate injuries.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q2','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_007_Medical Record Review</div>
+          <div class="option-desc">Review of Medical Records, updating the Medical History tab in Litify, creation of medical record summaries.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q2','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_022_Case Value/Enhancement Research</div>
+          <div class="option-desc">Tort-specific projects to gather information that could strengthen a client's claim.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q2-badge"></span>
+    <button class="btn-submit" id="q2-btn" onclick="submit('q2','c','Medical Record Review (007) is the correct code — it covers reviewing records that have already arrived, updating the Medical History tab in Litify, and drafting summaries. Medical Record Request/Follow Up (006) is used when you are submitting requests or doing outreach to get records, not reviewing ones you already have.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="q-card" id="q3">
+  <div class="q-topbar">Question 3 of 8 <span class="q-tag">Comms</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      A client calls you unexpectedly to ask about the status of their case. You did not reach out to them — they initiated the call. You spend 20 minutes on the phone with them answering their questions.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q3','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_002_Client Communication</div>
+          <div class="option-desc">Response to INBOUND client communication only — includes unprompted calls and calls in response to M&amp;M outreach.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q3','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_018_Case Status Mtgs/Calls with Leads/Team</div>
+          <div class="option-desc">Check-ins with Team Leads or weekly calls with Attorney/Lead Paralegal.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q3','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_004_CQ Retrieval</div>
+          <div class="option-desc">Outreach to clients related to CQ or HIPAA retrieval.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q3','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_027_Admin Monthly Meeting/Training</div>
+          <div class="option-desc">Attending internal M&amp;M meetings not associated with your assigned tort.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q3-badge"></span>
+    <button class="btn-submit" id="q3-btn" onclick="submit('q3','a','Client Communication (002) is for INBOUND calls — when the client reaches out to you, whether prompted or unprompted. This is important because it gives the firm visibility into how often clients are calling in. If you had called the client first, you would use the code matching the reason for your outreach instead.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="q-card" id="q4">
+  <div class="q-topbar">Question 4 of 8 <span class="q-tag">Admin</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      You notice that three client Display Names in Litify are formatted incorrectly. You spend 30 minutes correcting the names, updating their Questionnaire Status, and fixing a File # field that was entered wrong.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q4','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_001_Initial Case Review</div>
+          <div class="option-desc">Review of intake or new matter information including inputting initial data into Litify.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q4','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_003_Case Audit</div>
+          <div class="option-desc">General review of matter information to identify missing information or validate client details.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q4','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_017_Data Clean Up</div>
+          <div class="option-desc">Update of information in Litify or Spreadsheets — Display Names, Statuses, File #, and other Litify fields.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q4','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_028_Admin Organizing/Prioritizing Tasks</div>
+          <div class="option-desc">Planning your day, entering time in Bill4Time, preparing to-do lists.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q4-badge"></span>
+    <button class="btn-submit" id="q4-btn" onclick="submit('q4','c','Data Clean Up (017) covers exactly this — correcting Display Names, updating Questionnaire Status, and fixing Litify fields like File #. Remember: do NOT use Data Clean Up when doing initial case review; that belongs under Initial Case Review (001).')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="q-card" id="q5">
+  <div class="q-topbar">Question 5 of 8 <span class="q-tag">Docs &amp; Filings</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      You spend two hours filling out a PFS form for a client, correcting deficiencies from a prior submission, and calling the client to get a missing piece of information needed to complete it.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q5','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_011_PFS Submission/Service</div>
+          <div class="option-desc">Submission or service of completed PFS documents to the appropriate portal or party.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q5','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_010_PFS Prep/Draft/Review</div>
+          <div class="option-desc">Preparation of PFS docs, filling in forms, correcting deficiencies, and reaching out to clients and/or running Locates.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q5','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_013_Misc. Prep/Draft/Review</div>
+          <div class="option-desc">Preparation of court submissions other than PFS or Census Forms.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q5','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_002_Client Communication</div>
+          <div class="option-desc">Response to inbound client communication.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q5-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q5-badge"></span>
+    <button class="btn-submit" id="q5-btn" onclick="submit('q5','b','PFS Prep/Draft/Review (010) is correct — it covers filling in forms, correcting deficiencies, and reaching out to clients to gather missing information. PFS Submission/Service (011) is only for the act of actually submitting or filing the completed form, not the preparation work.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="q-card" id="q6">
+  <div class="q-topbar">Question 6 of 8 <span class="q-tag">Settlement</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      A client's case has settled. You prepare the closing statement, communicate with the client about their settlement payment amount, and run a Locate as part of the disbursement process.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q6','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_023_Settlement Prep/Draft/Review</div>
+          <div class="option-desc">Preparation of settlement packages, submitting forms to portal, curing deficiencies, and outreach to clients for settlement participation.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q6','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_025_Finance</div>
+          <div class="option-desc">Internal activity related to Finance queries, billing statements, expense allocations.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q6','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_024_Settlement Distribution</div>
+          <div class="option-desc">Preparation of Case Closing statements and activities related to disbursing funds to clients, including communication with clients about payment status and running Locates.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q6','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_016_TD Processing</div>
+          <div class="option-desc">Sending client TD letter and processing Finance request to close a turned-down matter.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q6-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q6-badge"></span>
+    <button class="btn-submit" id="q6-btn" onclick="submit('q6','c','Settlement Distribution (024) is correct — it covers closing statements, communicating with clients about their payment, and running Locates as part of the disbursement process. Settlement Prep/Draft/Review (023) is used earlier in the process when you are preparing and submitting the settlement package, not closing out the case.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="q-card" id="q7">
+  <div class="q-topbar">Question 7 of 8 <span class="q-tag">Admin</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      Your computer is running slowly and you cannot access Litify. You contact M&amp;M IT and spend 45 minutes on the phone troubleshooting your remote desktop connection and log-in access.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q7','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_028_Admin Organizing/Prioritizing Tasks</div>
+          <div class="option-desc">Planning your day, entering time in Bill4Time, preparing to-do lists.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q7','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_029_Admin Tech Issues</div>
+          <div class="option-desc">Time spent dealing with M&amp;M IT to resolve tech issues — remote desktop, log-in access, Litify bugs, etc.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q7','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_017_Data Clean Up</div>
+          <div class="option-desc">Update of information in Litify or Spreadsheets.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q7','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_027_Admin Monthly Meeting/Training</div>
+          <div class="option-desc">Attending internal M&amp;M meetings or trainings not associated with your assigned tort.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q7-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q7-badge"></span>
+    <button class="btn-submit" id="q7-btn" onclick="submit('q7','b','Admin Tech Issues (029) is specifically for time spent with M&amp;M IT resolving technical problems like remote desktop issues, log-in access, and Litify bugs — exactly what this scenario describes.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="q-card" id="q8">
+  <div class="q-topbar">Question 8 of 8 <span class="q-tag">Case Work</span></div>
+  <div class="q-body">
+    <div class="scenario-box">
+      <div class="scenario-label">Scenario</div>
+      You are reviewing a matter to assess whether it is ready for settlement. You check for missing documents, validate the client's injuries and tiers, review proof of usage and exposure, and determine whether the client should be evaluated for Turn Down.
+    </div>
+    <div class="q-stem">Which activity code should you select?</div>
+    <div class="options">
+      <div class="option" onclick="select('q8','a')">
+        <div class="option-letter">A</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_001_Initial Case Review</div>
+          <div class="option-desc">Review of intake or new matter information including SOL Setting and initial Litify input.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q8','b')">
+        <div class="option-letter">B</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_022_Case Value/Enhancement Research</div>
+          <div class="option-desc">Tort-specific projects to gather information that could strengthen a client's claim.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q8','c')">
+        <div class="option-letter">C</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_023_Settlement Prep/Draft/Review</div>
+          <div class="option-desc">Preparation of settlement packages, submitting forms, and curing deficiencies.</div>
+        </div>
+      </div>
+      <div class="option" onclick="select('q8','d')">
+        <div class="option-letter">D</div>
+        <div class="option-body">
+          <div class="option-code">SLS_Paralegal_003_Case Audit</div>
+          <div class="option-desc">General review of matter information (excluding initial case review) to identify missing info, validate injuries and tiers, proof of usage, assess settlement readiness, and evaluate for Turn Down.</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="q8-fb"></div>
+  </div>
+  <div class="q-footer">
+    <span class="answered-badge" id="q8-badge"></span>
+    <button class="btn-submit" id="q8-btn" onclick="submit('q8','d','Case Audit (003) is correct — it covers all of the activities described: reviewing for missing documents, validating injuries and tiers, checking proof of usage and exposure, assessing settlement readiness, and evaluating for Turn Down. This is different from Initial Case Review (001), which is only for brand-new intake matters.')">Submit Answer</button>
+  </div>
+</div>
+
+<!-- Score card -->
+<div class="score-card" id="scoreCard">
+  <div class="score-topbar">Results — Knowledge Check Complete</div>
+  <div class="score-body">
+    <div class="score-circle">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-denom">out of 8</div>
+    </div>
+    <div class="score-text">
+      <h3 id="scoreHeading"></h3>
+      <p id="scoreMsg"></p>
+    </div>
+  </div>
+  <div class="score-footer">
+    <button class="btn-retry" onclick="resetAll()">Try Again</button>
+  </div>
+</div>
+
+<script>
+  const total = 8;
+  const chosen  = {};
+  const correct = { q1:'b', q2:'c', q3:'a', q4:'c', q5:'b', q6:'c', q7:'b', q8:'d' };
+  const letters = ['a','b','c','d'];
+
+  function select(qid, letter) {
+    if (chosen[qid] !== undefined) return;
+    // Clear outlines
+    document.querySelectorAll('#' + qid + ' .option').forEach(o => o.style.outline = 'none');
+    // Highlight selection
+    const opts = document.querySelectorAll('#' + qid + ' .option');
+    opts[letters.indexOf(letter)].style.outline = '2px solid #1e4da1';
+    chosen[qid + '_pending'] = letter;
+  }
+
+  function submit(qid, correctLetter, explanation) {
+    const pending = chosen[qid + '_pending'];
+    if (!pending) return;
+    if (chosen[qid] !== undefined) return;
+    chosen[qid] = pending;
+
+    const isCorrect = pending === correctLetter;
+    const opts = document.querySelectorAll('#' + qid + ' .option');
+
+    opts.forEach((o, i) => {
+      o.style.outline = 'none';
+      o.style.pointerEvents = 'none';
+      const l = letters[i];
+      if (l === correctLetter)            o.classList.add('reveal-correct');
+      else if (l === pending && !isCorrect) o.classList.add('selected-wrong');
+      else                                 o.classList.add('dimmed');
+    });
+
+    const fb = document.getElementById(qid + '-fb');
+    fb.style.display = 'block';
+    fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+    fb.innerHTML = (isCorrect ? '<strong>✓ Correct!</strong> ' : '<strong>✕ Not quite.</strong> ') + explanation;
+
+    const badge = document.getElementById(qid + '-badge');
+    badge.style.display = 'inline-block';
+    badge.className = 'answered-badge ' + (isCorrect ? 'correct' : 'wrong');
+    badge.textContent = isCorrect ? '✓ Correct' : '✕ Incorrect';
+
+    document.getElementById(qid + '-btn').disabled = true;
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const answered = Object.keys(chosen).filter(k => !k.includes('_pending')).length;
+    const pct = (answered / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = answered + ' of ' + total + ' answered';
+    document.getElementById('progressText').textContent  = answered + ' of ' + total + ' answered';
+
+    if (answered === total) setTimeout(showScore, 400);
+  }
+
+  function showScore() {
+    let score = 0;
+    for (let i = 1; i <= total; i++) {
+      if (chosen['q'+i] === correct['q'+i]) score++;
+    }
+    document.getElementById('scoreNum').textContent = score;
+
+    const sc = document.getElementById('scoreCard');
+    sc.style.display = 'block';
+    sc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const circle = document.querySelector('.score-circle');
+    let heading, msg;
+    if (score === 8) {
+      heading = 'Perfect score!';
+      msg = 'You correctly identified the right activity code for every scenario. You are ready to apply these codes accurately in your daily Bill4Time entries.';
+      circle.style.borderColor = '#60a860';
+      document.getElementById('scoreNum').style.color = '#1a5a1a';
+    } else if (score >= 6) {
+      heading = 'Great work — almost there.';
+      msg = 'You have a strong grasp of the activity codes. Review the questions you missed and pay close attention to codes that sound similar — like Medical Record Request vs. Medical Record Review, or PFS Prep vs. PFS Submission.';
+    } else if (score >= 4) {
+      heading = 'Good effort — keep reviewing.';
+      msg = 'You know some of the codes well but a few areas need more practice. Revisit the activity code reference table, especially for Case Audit, Settlement Distribution, and the difference between inbound and outbound communications.';
+      circle.style.borderColor = '#e0b020';
+      document.getElementById('scoreNum').style.color = '#b06000';
+    } else {
+      heading = 'Keep reviewing the reference table.';
+      msg = 'It looks like the activity codes need a closer look. We recommend revisiting the full reference table before retaking this check — pay attention to the "When to Use" descriptions for each code.';
+      circle.style.borderColor = '#e05050';
+      document.getElementById('scoreNum').style.color = '#8a2020';
+    }
+    document.getElementById('scoreHeading').textContent = heading;
+    document.getElementById('scoreMsg').textContent = msg;
+  }
+
+  function resetAll() {
+    for (const k of Object.keys(chosen)) delete chosen[k];
+    for (let i = 1; i <= total; i++) {
+      const qid = 'q' + i;
+      document.querySelectorAll('#' + qid + ' .option').forEach(o => {
+        o.className = 'option';
+        o.style.outline = 'none';
+        o.style.pointerEvents = '';
+        const l = letters[Array.from(o.parentNode.children).indexOf(o)];
+        o.onclick = () => select(qid, l);
+      });
+      // Re-bind clicks
+      rebind(qid);
+      document.getElementById(qid + '-fb').style.display = 'none';
+      document.getElementById(qid + '-badge').style.display = 'none';
+      document.getElementById(qid + '-btn').disabled = false;
+    }
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 of 8 answered';
+    document.getElementById('progressText').textContent  = '0 of 8 answered';
+    document.getElementById('scoreCard').style.display = 'none';
+    document.querySelector('.score-circle').style.borderColor = '#1e4da1';
+    document.getElementById('scoreNum').style.color = '#1e4da1';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function rebind(qid) {
+    document.querySelectorAll('#' + qid + ' .option').forEach((o, i) => {
+      o.onclick = () => select(qid, letters[i]);
+    });
+  }
+</script>
+</body>
+</html>
